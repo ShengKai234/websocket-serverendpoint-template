@@ -1,0 +1,5 @@
+ws.applicationPrefix: /app
+ws.topicPrefix: /topic
+ws.registerEndpoint: /websocket
+ws.mappingMessage: /authorize
+ws.subscribe: /topic/subscribe

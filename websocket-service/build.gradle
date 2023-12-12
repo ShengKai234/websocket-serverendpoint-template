@@ -1,0 +1,80 @@
+buildscript {
+	dependencies {
+		classpath('gradle.plugin.com.palantir.gradle.docker:gradle-docker:0.13.0')
+	}
+}
+
+plugins {
+	id 'java'
+	id 'org.springframework.boot' version '3.1.0'
+	id 'io.spring.dependency-management' version '1.1.0'
+}
+
+//apply plugin: 'com.palantir.docker'
+
+group = 'com.signblast'
+version = '0.0.1-SNAPSHOT'
+sourceCompatibility = '17'
+
+configurations {
+	compileOnly {
+		extendsFrom annotationProcessor
+	}
+}
+
+repositories {
+	mavenCentral()
+	maven { url 'https://repo.spring.io/milestone' }
+	maven { url 'https://repo.spring.io/snapshot' }
+}
+
+ext {
+	set('springCloudVersion', "2022.0.2")
+	dockerImagePrefix = "signblast"
+}
+
+sourceSets {
+	main {
+		resources {
+			srcDirs = ['src/main/resources']
+		}
+	}
+}
+
+dependencies {
+	implementation 'org.springframework.boot:spring-boot-starter-websocket'
+
+
+	compileOnly 'org.projectlombok:lombok'
+	annotationProcessor 'org.projectlombok:lombok'
+
+	testImplementation 'org.springframework.boot:spring-boot-starter-test'
+}
+
+tasks.named('bootBuildImage') {
+	builder = 'paketobuildpacks/builder-jammy-base:latest'
+}
+
+tasks.named('test') {
+	useJUnitPlatform()
+}
+
+//docker {
+//	def profile = 'dev'
+//	if (project.hasProperty('ENV')) {
+//		profile = project.getProperty('ENV')
+//	}
+//
+//	name "${dockerImagePrefix}/${project.name}:${project.version}"
+//	tags 'latest'
+//	files (
+//			bootJar.archiveFile,
+//			'src/main/docker/run.sh',
+//			"src/main/resources/bootstrap-${profile}.yaml"
+//	)
+//	dockerfile file('src/main/docker/Dockerfile')
+//	buildArgs([
+//			'JAR_FILE': "${bootJar.archiveName}",
+//			'SHELL_FILE': "run.sh",
+//			'SPRING_PROFIKES_ACTIVE': profile])
+//}
